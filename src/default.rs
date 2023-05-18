@@ -2,6 +2,8 @@ use crate::results::BenchmarkResults;
 use std::future::Future;
 
 /// builder pattern for the benchmarking system
+/// the default settings are:
+/// - passes: 10
 ///
 /// # Example
 ///
@@ -49,6 +51,7 @@ impl BenchmarkBuilder {
     }
 
     /// enable debug output for the benchmark lib
+    #[allow(dead_code)]
     fn set_debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()

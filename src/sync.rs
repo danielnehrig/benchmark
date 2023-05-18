@@ -1,6 +1,17 @@
 use crate::results::BenchmarkResults;
 
-// builder pattern for the benchmarking
+/// builder pattern for the benchmarking system
+/// the default settings are:
+/// - passes: 10
+///
+/// # Example
+///
+/// ```
+/// use benchmark::sync::BenchmarkBuilder;
+/// BenchmarkBuilder::default()
+///   .set_passes(10)
+///   .done();
+/// ```
 #[derive(Clone, Debug)]
 pub struct BenchmarkBuilder {
     pub passes: i32,
@@ -16,7 +27,14 @@ impl Default for BenchmarkBuilder {
     }
 }
 
-/// the sync implementation of the benchmark
+/// the benchmark struct
+/// # Example
+/// ```
+/// use benchmark::sync::Benchmark;
+/// Benchmark::default_run(|| {
+///   // do something
+/// });
+/// ```
 pub struct Benchmark(BenchmarkBuilder);
 
 impl BenchmarkBuilder {
@@ -32,6 +50,7 @@ impl BenchmarkBuilder {
     }
 
     /// Debug output for the benchmark lib
+    #[allow(dead_code)]
     fn set_debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()

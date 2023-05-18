@@ -1,6 +1,7 @@
 # Benchmark RS
 
 A lib for basic benchmarking dump your results to Json
+you probably should much rather be using criterion
 
 # Setup
 Add to cargo.toml
