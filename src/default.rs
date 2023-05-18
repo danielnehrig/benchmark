@@ -1,11 +1,20 @@
 use crate::results::BenchmarkResults;
 use std::future::Future;
 
-// builder pattern
+/// builder pattern for the benchmarking system
+///
+/// # Example
+///
+/// ```
+/// use benchmark::default::BenchmarkBuilder;
+/// BenchmarkBuilder::default()
+///   .set_passes(10)
+///   .done();
+/// ```
 #[derive(Clone, Debug)]
 pub struct BenchmarkBuilder {
     pub passes: i32,
-    pub debug: bool,
+    debug: bool,
 }
 
 impl Default for BenchmarkBuilder {
@@ -17,9 +26,18 @@ impl Default for BenchmarkBuilder {
     }
 }
 
+/// the benchmark struct
+/// # Example
+/// ```
+/// use benchmark::default::Benchmark;
+/// Benchmark::default_run(|| async {
+///   // do something
+/// });
+/// ```
 pub struct Benchmark(BenchmarkBuilder);
 
 impl BenchmarkBuilder {
+    /// create a new builder
     pub fn new() -> Self {
         Self::default()
     }
@@ -30,17 +48,34 @@ impl BenchmarkBuilder {
         self.to_owned()
     }
 
-    pub fn set_debug(&mut self, debug: bool) -> Self {
+    /// enable debug output for the benchmark lib
+    fn set_debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()
     }
 
+    /// finish the builder and return the benchmark
+    /// # Example
+    /// ```
+    /// use benchmark::default::BenchmarkBuilder;
+    /// BenchmarkBuilder::default().done();
+    /// ```
     pub fn done(&self) -> Benchmark {
         Benchmark(self.to_owned())
     }
 }
 
 impl Benchmark {
+    /// run the benchmark with the default settings without any construction
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::default::Benchmark;
+    /// Benchmark::default_run(|| async {
+    ///    // do something
+    /// });
+    /// ```
     #[inline]
     pub fn default_run<F, Fut>(closure: F) -> BenchmarkResults
     where
@@ -50,6 +85,19 @@ impl Benchmark {
         BenchmarkBuilder::default().done().run(closure)
     }
 
+    /// run the benchmark with the builder borrows self
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::default::BenchmarkBuilder;
+    /// BenchmarkBuilder::default()
+    ///    .set_passes(10)
+    ///    .done()
+    ///    .run(|| async {
+    ///      // do something
+    ///    });
+    /// ```
     pub fn run<F, Fut>(&self, closure: F) -> BenchmarkResults
     where
         F: Fn() -> Fut,

@@ -1,8 +1,8 @@
-mod results;
-mod sync;
+pub mod results;
+pub mod sync;
 
 #[cfg(feature = "async")]
-mod default;
+pub mod default;
 
 // Test sync
 #[cfg(test)]
@@ -15,7 +15,6 @@ mod sync_tests {
         let mut benchmark = BenchmarkBuilder::default();
         let result = benchmark
             .set_passes(50)
-            .set_debug(false)
             .done()
             .run(|| {
                 println!("Hello world");

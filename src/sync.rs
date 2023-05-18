@@ -1,10 +1,10 @@
 use crate::results::BenchmarkResults;
 
-// builder pattern
+// builder pattern for the benchmarking
 #[derive(Clone, Debug)]
 pub struct BenchmarkBuilder {
     pub passes: i32,
-    pub debug: bool,
+    debug: bool,
 }
 
 impl Default for BenchmarkBuilder {
@@ -16,9 +16,11 @@ impl Default for BenchmarkBuilder {
     }
 }
 
+/// the sync implementation of the benchmark
 pub struct Benchmark(BenchmarkBuilder);
 
 impl BenchmarkBuilder {
+    /// construct the builder
     pub fn new() -> Self {
         Self::default()
     }
@@ -29,18 +31,29 @@ impl BenchmarkBuilder {
         self.to_owned()
     }
 
-    pub fn set_debug(&mut self, debug: bool) -> Self {
+    /// Debug output for the benchmark lib
+    fn set_debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()
     }
 
+    /// Build the benchmark
     pub fn done(&self) -> Benchmark {
         Benchmark(self.to_owned())
     }
 }
 
 impl Benchmark {
-    /// run the benchmark and return results
+    /// run the benchmark with the default settings without any construction
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::sync::Benchmark;
+    /// Benchmark::default_run(|| {
+    ///    // do something
+    /// });
+    /// ```
     #[inline]
     pub fn default_run<F>(closure: F) -> BenchmarkResults
     where
@@ -49,6 +62,19 @@ impl Benchmark {
         BenchmarkBuilder::default().done().run(closure)
     }
 
+    /// run the benchmark with the builder borrows self
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::sync::BenchmarkBuilder;
+    /// BenchmarkBuilder::default()
+    ///    .set_passes(10)
+    ///    .done()
+    ///    .run(|| {
+    ///      // do something
+    ///    });
+    /// ```
     pub fn run<F>(&self, closure: F) -> BenchmarkResults
     where
         F: Fn(),
