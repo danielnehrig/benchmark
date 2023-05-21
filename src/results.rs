@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use serde::{Deserialize, Serialize};
 
 /// TODO: Add CPU Load over time
@@ -5,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkResults {
     /// stores the time in nanoseconds on how long the closure needed to run
-    pub time: Vec<i64>,
+    pub time: Vec<Duration>,
     /// platform system name
     pub platform: String,
     /// lib controlled additional info

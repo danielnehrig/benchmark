@@ -1,3 +1,5 @@
+use std::time::Duration;
+
 use crate::results::BenchmarkResults;
 
 /// builder pattern for the benchmarking system
@@ -99,12 +101,12 @@ impl Benchmark {
         F: Fn(),
     {
         // run the benchmark
-        let mut times: Vec<i64> = Vec::new();
+        let mut times: Vec<Duration> = Vec::new();
         for _ in 0..self.0.passes {
             // start timer
             let timer = std::time::Instant::now();
             closure();
-            times.push(timer.elapsed().as_nanos() as i64)
+            times.push(timer.elapsed())
         }
 
         BenchmarkResults {
