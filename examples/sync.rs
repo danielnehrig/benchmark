@@ -1,4 +1,4 @@
-use benchmark::sync::Benchmark;
+use benchmark::sync::{Benchmark, BenchmarkBuilder};
 
 fn fib(n: i32) -> i128 {
     let mut vec = vec![1, 1];
@@ -11,8 +11,17 @@ fn fib(n: i32) -> i128 {
 fn main() {
     let result = fib(10);
     assert_eq!(result, 55);
+
     Benchmark::default_run(|| {
         let _ = fib(10);
     })
     .save("fib");
+
+    BenchmarkBuilder::new()
+        .passes(100)
+        .done()
+        .run(|| {
+            let _ = fib(30);
+        })
+        .save("fib2_100");
 }

@@ -1,5 +1,5 @@
 use crate::results::BenchmarkResults;
-use std::future::Future;
+use std::{future::Future, time::Duration};
 
 /// builder pattern for the benchmarking system
 /// the default settings are:
@@ -10,7 +10,7 @@ use std::future::Future;
 /// ```
 /// use benchmark::default::BenchmarkBuilder;
 /// BenchmarkBuilder::default()
-///   .set_passes(10)
+///   .passes(10)
 ///   .done();
 /// ```
 #[derive(Clone, Debug)]
@@ -45,7 +45,7 @@ impl BenchmarkBuilder {
     }
 
     /// Amount of times the benchmark closure will be run and measurments are taken.
-    pub fn set_passes(&mut self, passes: i32) -> Self {
+    pub fn passes(&mut self, passes: i32) -> Self {
         self.passes = passes;
         self.to_owned()
     }
@@ -95,7 +95,7 @@ impl Benchmark {
     /// ```
     /// use benchmark::default::BenchmarkBuilder;
     /// BenchmarkBuilder::default()
-    ///    .set_passes(10)
+    ///    .passes(10)
     ///    .done()
     ///    .run(|| async {
     ///      // do something
@@ -107,12 +107,12 @@ impl Benchmark {
         Fut: Future<Output = ()>,
     {
         // run the benchmark
-        let mut times: Vec<i64> = Vec::new();
+        let mut times: Vec<Duration> = Vec::new();
         for _ in 0..self.0.passes {
             // start timer
             let timer = std::time::Instant::now();
             futures::executor::block_on(closure());
-            times.push(timer.elapsed().as_nanos() as i64)
+            times.push(timer.elapsed())
         }
 
         BenchmarkResults {

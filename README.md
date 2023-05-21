@@ -16,7 +16,7 @@ benchmark = { git = "https://github.com/danielnehrig/benchmark", features = ["as
 use benchmark::sync::{BenchmarkBuilder};
 let mut benchmark = BenchmarkBuilder::default();
 let result = benchmark
-    .set_passes(50)
+    .passes(50)
     .done()
     .run(|| {
         println!("Hello world");
@@ -29,7 +29,7 @@ let result = benchmark
 use benchmark::default::{BenchmarkBuilder};
 let mut benchmark = BenchmarkBuilder::default();
 let result = benchmark
-    .set_passes(50)
+    .passes(50)
     .done()
     .run(|| async {
         println!("Hello world");

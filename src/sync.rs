@@ -11,13 +11,15 @@ use crate::results::BenchmarkResults;
 /// ```
 /// use benchmark::sync::BenchmarkBuilder;
 /// BenchmarkBuilder::default()
-///   .set_passes(10)
+///   .passes(100)
+///   .concurrent(false)
 ///   .done();
 /// ```
 #[derive(Clone, Debug)]
 pub struct BenchmarkBuilder {
     pub passes: i32,
     debug: bool,
+    concurrent: bool,
 }
 
 impl Default for BenchmarkBuilder {
@@ -25,6 +27,7 @@ impl Default for BenchmarkBuilder {
         Self {
             passes: 10,
             debug: false,
+            concurrent: false,
         }
     }
 }
@@ -46,14 +49,21 @@ impl BenchmarkBuilder {
     }
 
     /// Amount of times the benchmark closure will be run and measurments are taken.
-    pub fn set_passes(&mut self, passes: i32) -> Self {
+    pub fn passes(&mut self, passes: i32) -> Self {
         self.passes = passes;
+        self.to_owned()
+    }
+
+    /// run passes concurrently
+    #[allow(dead_code)]
+    pub fn concurrent(&mut self, is: bool) -> Self {
+        self.concurrent = is;
         self.to_owned()
     }
 
     /// Debug output for the benchmark lib
     #[allow(dead_code)]
-    fn set_debug(&mut self, debug: bool) -> Self {
+    fn debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()
     }
@@ -90,7 +100,7 @@ impl Benchmark {
     /// ```
     /// use benchmark::sync::BenchmarkBuilder;
     /// BenchmarkBuilder::default()
-    ///    .set_passes(10)
+    ///    .passes(10)
     ///    .done()
     ///    .run(|| {
     ///      // do something

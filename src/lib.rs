@@ -14,7 +14,7 @@ mod sync_tests {
     fn benchmark_builder() {
         let mut benchmark = BenchmarkBuilder::default();
         let result = benchmark
-            .set_passes(50)
+            .passes(50)
             .done()
             .run(|| {
                 println!("Hello world");
