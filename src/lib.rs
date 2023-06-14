@@ -1,14 +1,15 @@
 pub mod results;
-pub mod sync;
 
-#[cfg(feature = "async")]
-pub mod default;
+#[cfg_attr(not(feature = "async"), path = "sync.rs")]
+#[cfg_attr(feature = "async", path = "async.rs")]
+pub mod prelude;
 
 // Test sync
+#[cfg(not(feature = "async"))]
 #[cfg(test)]
 mod sync_tests {
     use super::*;
-    use sync::{Benchmark, BenchmarkBuilder};
+    use prelude::{Benchmark, BenchmarkBuilder};
 
     #[test]
     fn benchmark_builder() {
@@ -20,7 +21,7 @@ mod sync_tests {
                 println!("Hello world");
             })
             .add_info("goated".into());
-        assert_eq!(result.platform, "linux");
+        assert_eq!(result.platform, std::env::consts::OS);
     }
 
     #[test]
@@ -29,15 +30,16 @@ mod sync_tests {
             println!("Hello world");
         })
         .add_info("default".into());
-        assert_eq!(result.platform, "linux");
+        assert_eq!(result.platform, std::env::consts::OS);
     }
 }
 
 // Test async
+#[cfg(feature = "async")]
 #[cfg(test)]
 mod async_tests {
     use super::*;
-    use default::{Benchmark, BenchmarkBuilder};
+    use prelude::{Benchmark, BenchmarkBuilder};
 
     async fn sum(x: i32, y: i32) -> i32 {
         x + y
@@ -51,7 +53,7 @@ mod async_tests {
                 sum(5, 5).await;
             })
             .add_info("goated".into());
-        assert_eq!(result.platform, "linux");
+        assert_eq!(result.platform, std::env::consts::OS);
     }
 
     #[test]
@@ -60,6 +62,6 @@ mod async_tests {
             sum(5, 5).await;
         })
         .add_info("goated".into());
-        assert_eq!(result.platform, "linux");
+        assert_eq!(result.platform, std::env::consts::OS);
     }
 }

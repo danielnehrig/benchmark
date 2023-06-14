@@ -8,7 +8,7 @@ use std::{future::Future, time::Duration};
 /// # Example
 ///
 /// ```
-/// use benchmark::default::BenchmarkBuilder;
+/// use benchmark::prelude::BenchmarkBuilder;
 /// BenchmarkBuilder::default()
 ///   .passes(10)
 ///   .done();
@@ -31,7 +31,7 @@ impl Default for BenchmarkBuilder {
 /// the benchmark struct
 /// # Example
 /// ```
-/// use benchmark::default::Benchmark;
+/// use benchmark::prelude::Benchmark;
 /// Benchmark::default_run(|| async {
 ///   // do something
 /// });
@@ -60,7 +60,7 @@ impl BenchmarkBuilder {
     /// finish the builder and return the benchmark
     /// # Example
     /// ```
-    /// use benchmark::default::BenchmarkBuilder;
+    /// use benchmark::prelude::BenchmarkBuilder;
     /// BenchmarkBuilder::default().done();
     /// ```
     pub fn done(&self) -> Benchmark {
@@ -74,7 +74,7 @@ impl Benchmark {
     /// # Example
     ///
     /// ```
-    /// use benchmark::default::Benchmark;
+    /// use benchmark::prelude::Benchmark;
     /// Benchmark::default_run(|| async {
     ///    // do something
     /// });
@@ -93,7 +93,7 @@ impl Benchmark {
     /// # Example
     ///
     /// ```
-    /// use benchmark::default::BenchmarkBuilder;
+    /// use benchmark::prelude::BenchmarkBuilder;
     /// BenchmarkBuilder::default()
     ///    .passes(10)
     ///    .done()

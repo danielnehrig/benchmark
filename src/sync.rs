@@ -9,7 +9,7 @@ use crate::results::BenchmarkResults;
 /// # Example
 ///
 /// ```
-/// use benchmark::sync::BenchmarkBuilder;
+/// use benchmark::prelude::BenchmarkBuilder;
 /// BenchmarkBuilder::default()
 ///   .passes(100)
 ///   .concurrent(false)
@@ -35,7 +35,7 @@ impl Default for BenchmarkBuilder {
 /// the benchmark struct
 /// # Example
 /// ```
-/// use benchmark::sync::Benchmark;
+/// use benchmark::prelude::Benchmark;
 /// Benchmark::default_run(|| {
 ///   // do something
 /// });
@@ -80,7 +80,7 @@ impl Benchmark {
     /// # Example
     ///
     /// ```
-    /// use benchmark::sync::Benchmark;
+    /// use benchmark::prelude::Benchmark;
     /// Benchmark::default_run(|| {
     ///    // do something
     /// });
@@ -98,7 +98,7 @@ impl Benchmark {
     /// # Example
     ///
     /// ```
-    /// use benchmark::sync::BenchmarkBuilder;
+    /// use benchmark::prelude::BenchmarkBuilder;
     /// BenchmarkBuilder::default()
     ///    .passes(10)
     ///    .done()
