@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[cfg_attr(target_os = "linux", path = "linux.rs")]
 mod linux;
+
 #[cfg_attr(windows, path = "windows.rs")]
 mod windows;
 
