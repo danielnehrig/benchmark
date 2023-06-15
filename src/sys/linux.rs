@@ -1,15 +1,8 @@
-use serde::{Deserialize, Serialize};
+use super::{Cpu, CpuInfo, Memory};
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::path::Path;
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Memory {
-    pub process: u64,
-    pub global: u64,
-    pub max_mem: u64,
-}
 
 /// read current systems memory usage and max available memory
 /// # Example
@@ -60,18 +53,6 @@ pub fn read_process_memory() -> u64 {
         }
     }
     mem.expect("failed to read process memory")
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Cpu {
-    pub cpu_process_usage: u64,
-    pub cpu_global_usage: u64,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct CpuInfo {
-    pub cpu_name: String,
-    pub core_amount: u64,
 }
 
 /// read the cpu usage of the current process
@@ -135,6 +116,8 @@ pub fn read_cpu_usage() -> Cpu {
 /// let cpu_info = get_cpu_info();
 /// assert!(cpu_info.cpu_name.len() > 0);
 /// assert!(cpu_info.core_amount > 0);
+/// assert!(cpu_info.thread_amount > 0);
+/// assert!(cpu_info.cpu_mhz > 0.0);
 /// ```
 pub fn get_cpu_info() -> CpuInfo {
     let path = Path::new("/proc/cpuinfo");
@@ -142,18 +125,33 @@ pub fn get_cpu_info() -> CpuInfo {
     let reader = BufReader::new(file);
     let mut cpu_name = None;
     let mut core_amount = None;
+    let mut cpu_mhz = None;
+    let mut thread_amount = None;
     for line in reader.lines() {
         let line = line.unwrap();
-        let split = line.split_whitespace();
+        let split = line.split_whitespace().collect::<Vec<&str>>();
         if line.starts_with("model name") {
-            cpu_name = Some(split.collect::<Vec<&str>>()[3..].join(" "));
+            cpu_name = Some(split[3..].join(" "));
         } else if line.starts_with("cpu cores") {
-            core_amount = Some(split.collect::<Vec<&str>>()[3].parse::<u64>().unwrap());
+            core_amount = Some(split[3].parse::<i16>().unwrap());
+        } else if line.starts_with("cpu MHz") {
+            cpu_mhz = Some(split[3].parse::<f64>().unwrap());
+        } else if line.starts_with("siblings") {
+            thread_amount = Some(split[2].parse::<i16>().unwrap());
+        }
+        if cpu_name.is_some()
+            && core_amount.is_some()
+            && cpu_mhz.is_some()
+            && thread_amount.is_some()
+        {
+            break;
         }
     }
 
     CpuInfo {
         cpu_name: cpu_name.expect("failed to read cpu name"),
+        thread_amount: thread_amount.expect("failed to read thread amount"),
+        cpu_mhz: cpu_mhz.expect("failed to read cpu mhz"),
         core_amount: core_amount.expect("failed to read core amount"),
     }
 }

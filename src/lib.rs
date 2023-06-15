@@ -3,8 +3,6 @@ pub mod results;
 pub mod engine;
 pub mod measurements;
 
-#[cfg_attr(target_os = "linux", path = "linux.rs")]
-#[cfg_attr(windows, path = "windows.rs")]
 pub mod sys;
 
 #[cfg(windows)]

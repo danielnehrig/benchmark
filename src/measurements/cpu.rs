@@ -23,9 +23,12 @@ impl Default for CpuMeasurement {
 
 impl super::MeasurementMethod for CpuMeasurement {
     fn run(&mut self) {
+        // spawns an async task that will read the cpu usage
+        // and write it to the struct
         todo!()
     }
     fn stop(&mut self) {
+        // stops the async task
         todo!()
     }
 }
