@@ -2,12 +2,14 @@ use std::time::Duration;
 
 use serde::{Deserialize, Serialize};
 
+use crate::measurements::MeasurementType;
+
 /// TODO: Add CPU Load over time
 /// Add system CPU cores and MEM capacity as well as frequency
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BenchmarkResults {
     /// stores the time in nanoseconds on how long the closure needed to run
-    pub time: Vec<Duration>,
+    pub time: Vec<MeasurementType>,
     /// platform system name
     pub platform: String,
     /// lib controlled additional info

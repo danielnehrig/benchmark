@@ -1,5 +1,6 @@
 use std::time::Duration;
 
+use crate::measurements::Measurement;
 use crate::results::BenchmarkResults;
 #[cfg(feature = "async")]
 use std::future::Future;
@@ -22,6 +23,7 @@ pub struct BenchmarkBuilder {
     pub passes: i32,
     debug: bool,
     concurrent: bool,
+    measurement: Measurement,
 }
 
 impl Default for BenchmarkBuilder {
@@ -30,6 +32,7 @@ impl Default for BenchmarkBuilder {
             passes: 10,
             debug: false,
             concurrent: false,
+            measurement: Measurement::new(),
         }
     }
 }
@@ -123,21 +126,19 @@ impl Benchmark {
     ///      // do something
     ///    });
     /// ```
-    pub fn run<F>(&self, closure: F) -> BenchmarkResults
+    pub fn run<F>(&mut self, closure: F) -> BenchmarkResults
     where
         F: Fn(),
     {
         // run the benchmark
-        let mut times: Vec<Duration> = Vec::new();
         for _ in 0..self.0.passes {
-            // start timer
-            let timer = std::time::Instant::now();
+            self.0.measurement.run();
             closure();
-            times.push(timer.elapsed())
+            self.0.measurement.stop();
         }
 
         BenchmarkResults {
-            time: times,
+            time: self.0.measurement.measurements.clone(),
             platform: std::env::consts::OS.to_string(),
             additional: None,
         }
@@ -157,22 +158,20 @@ impl Benchmark {
     ///      // do something
     ///    });
     /// ```
-    pub fn run<F, Fut>(&self, closure: F) -> BenchmarkResults
+    pub fn run<F, Fut>(&mut self, closure: F) -> BenchmarkResults
     where
         F: Fn() -> Fut,
         Fut: Future<Output = ()>,
     {
         // run the benchmark
-        let mut times: Vec<Duration> = Vec::new();
         for _ in 0..self.0.passes {
-            // start timer
-            let timer = std::time::Instant::now();
+            self.0.measurement.run();
             futures::executor::block_on(closure());
-            times.push(timer.elapsed())
+            self.0.measurement.stop();
         }
 
         BenchmarkResults {
-            time: times,
+            time: self.0.measurement.measurements.clone(),
             platform: std::env::consts::OS.to_string(),
             additional: None,
         }

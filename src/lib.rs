@@ -1,6 +1,7 @@
 pub mod results;
 
 pub mod engine;
+pub mod measurements;
 
 pub mod prelude {
     pub use crate::engine::{Benchmark, BenchmarkBuilder};
@@ -25,6 +26,7 @@ mod sync_tests {
             })
             .add_info("goated".into());
         assert_eq!(result.platform, std::env::consts::OS);
+        result.save("sync");
     }
 
     #[test]
@@ -57,6 +59,7 @@ mod async_tests {
             })
             .add_info("goated".into());
         assert_eq!(result.platform, std::env::consts::OS);
+        result.save("async");
     }
 
     #[test]
