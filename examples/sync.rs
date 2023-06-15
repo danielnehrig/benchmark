@@ -8,6 +8,7 @@ fn fib(n: i32) -> i128 {
     vec[n as usize - 1_usize]
 }
 
+#[cfg(not(feature = "async"))]
 fn main() {
     let result = fib(10);
     assert_eq!(result, 55);
@@ -21,6 +22,25 @@ fn main() {
         .passes(100)
         .done()
         .run(|| {
+            let _ = fib(30);
+        })
+        .save("fib2_100");
+}
+
+#[cfg(feature = "async")]
+fn main() {
+    let result = fib(10);
+    assert_eq!(result, 55);
+
+    Benchmark::default_run(|| async {
+        let _ = fib(10);
+    })
+    .save("fib");
+
+    BenchmarkBuilder::new()
+        .passes(100)
+        .done()
+        .run(|| async {
             let _ = fib(30);
         })
         .save("fib2_100");
