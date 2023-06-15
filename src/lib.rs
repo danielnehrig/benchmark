@@ -2,6 +2,11 @@ pub mod results;
 
 pub mod engine;
 
+pub mod prelude {
+    pub use crate::engine::{Benchmark, BenchmarkBuilder};
+    pub use crate::results::BenchmarkResults;
+}
+
 // Test sync
 #[cfg(not(feature = "async"))]
 #[cfg(test)]
