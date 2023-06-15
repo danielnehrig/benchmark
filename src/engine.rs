@@ -1,5 +1,8 @@
+use std::time::Duration;
+
 use crate::results::BenchmarkResults;
-use std::{future::Future, time::Duration};
+#[cfg(feature = "async")]
+use std::future::Future;
 
 /// builder pattern for the benchmarking system
 /// the default settings are:
@@ -8,15 +11,17 @@ use std::{future::Future, time::Duration};
 /// # Example
 ///
 /// ```
-/// use benchmark::prelude::BenchmarkBuilder;
+/// use benchmark::engine::BenchmarkBuilder;
 /// BenchmarkBuilder::default()
-///   .passes(10)
+///   .passes(100)
+///   .concurrent(false)
 ///   .done();
 /// ```
 #[derive(Clone, Debug)]
 pub struct BenchmarkBuilder {
     pub passes: i32,
     debug: bool,
+    concurrent: bool,
 }
 
 impl Default for BenchmarkBuilder {
@@ -24,22 +29,16 @@ impl Default for BenchmarkBuilder {
         Self {
             passes: 10,
             debug: false,
+            concurrent: false,
         }
     }
 }
 
 /// the benchmark struct
-/// # Example
-/// ```
-/// use benchmark::prelude::Benchmark;
-/// Benchmark::default_run(|| async {
-///   // do something
-/// });
-/// ```
 pub struct Benchmark(BenchmarkBuilder);
 
 impl BenchmarkBuilder {
-    /// create a new builder
+    /// construct the builder
     pub fn new() -> Self {
         Self::default()
     }
@@ -50,31 +49,53 @@ impl BenchmarkBuilder {
         self.to_owned()
     }
 
-    /// enable debug output for the benchmark lib
+    /// run passes concurrently
     #[allow(dead_code)]
-    fn set_debug(&mut self, debug: bool) -> Self {
+    pub fn concurrent(&mut self, is: bool) -> Self {
+        self.concurrent = is;
+        self.to_owned()
+    }
+
+    /// Debug output for the benchmark lib
+    #[allow(dead_code)]
+    fn debug(&mut self, debug: bool) -> Self {
         self.debug = debug;
         self.to_owned()
     }
 
-    /// finish the builder and return the benchmark
-    /// # Example
-    /// ```
-    /// use benchmark::prelude::BenchmarkBuilder;
-    /// BenchmarkBuilder::default().done();
-    /// ```
+    /// Build the benchmark
     pub fn done(&self) -> Benchmark {
         Benchmark(self.to_owned())
     }
 }
 
 impl Benchmark {
+    #[cfg(not(feature = "async"))]
     /// run the benchmark with the default settings without any construction
     ///
     /// # Example
     ///
     /// ```
-    /// use benchmark::prelude::Benchmark;
+    /// use benchmark::engine::Benchmark;
+    /// Benchmark::default_run(|| {
+    ///    // do something
+    /// });
+    /// ```
+    #[inline]
+    pub fn default_run<F>(closure: F) -> BenchmarkResults
+    where
+        F: Fn(),
+    {
+        BenchmarkBuilder::default().done().run(closure)
+    }
+
+    #[cfg(feature = "async")]
+    /// run the benchmark with the default settings without any construction
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::engine::Benchmark;
     /// Benchmark::default_run(|| async {
     ///    // do something
     /// });
@@ -88,12 +109,47 @@ impl Benchmark {
         BenchmarkBuilder::default().done().run(closure)
     }
 
+    #[cfg(not(feature = "async"))]
     /// run the benchmark with the builder borrows self
     ///
     /// # Example
     ///
     /// ```
-    /// use benchmark::prelude::BenchmarkBuilder;
+    /// use benchmark::engine::BenchmarkBuilder;
+    /// BenchmarkBuilder::default()
+    ///    .passes(10)
+    ///    .done()
+    ///    .run(|| {
+    ///      // do something
+    ///    });
+    /// ```
+    pub fn run<F>(&self, closure: F) -> BenchmarkResults
+    where
+        F: Fn(),
+    {
+        // run the benchmark
+        let mut times: Vec<Duration> = Vec::new();
+        for _ in 0..self.0.passes {
+            // start timer
+            let timer = std::time::Instant::now();
+            closure();
+            times.push(timer.elapsed())
+        }
+
+        BenchmarkResults {
+            time: times,
+            platform: std::env::consts::OS.to_string(),
+            additional: None,
+        }
+    }
+
+    #[cfg(feature = "async")]
+    /// run the benchmark with the builder borrows self
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use benchmark::engine::BenchmarkBuilder;
     /// BenchmarkBuilder::default()
     ///    .passes(10)
     ///    .done()

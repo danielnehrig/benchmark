@@ -1,4 +1,4 @@
-use benchmark::prelude::{Benchmark, BenchmarkBuilder};
+use benchmark::engine::{Benchmark, BenchmarkBuilder};
 
 fn fib(n: i32) -> i128 {
     let mut vec = vec![1, 1];

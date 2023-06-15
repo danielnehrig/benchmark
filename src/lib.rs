@@ -1,15 +1,13 @@
 pub mod results;
 
-#[cfg_attr(not(feature = "async"), path = "sync.rs")]
-#[cfg_attr(feature = "async", path = "async.rs")]
-pub mod prelude;
+pub mod engine;
 
 // Test sync
 #[cfg(not(feature = "async"))]
 #[cfg(test)]
 mod sync_tests {
     use super::*;
-    use prelude::{Benchmark, BenchmarkBuilder};
+    use engine::{Benchmark, BenchmarkBuilder};
 
     #[test]
     fn benchmark_builder() {
@@ -39,7 +37,7 @@ mod sync_tests {
 #[cfg(test)]
 mod async_tests {
     use super::*;
-    use prelude::{Benchmark, BenchmarkBuilder};
+    use engine::{Benchmark, BenchmarkBuilder};
 
     async fn sum(x: i32, y: i32) -> i32 {
         x + y
