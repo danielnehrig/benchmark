@@ -1,6 +1,8 @@
-use std::time::Duration;
-
+use super::measurements::cpu::CpuMeasurement;
+use super::measurements::time::TimeMeasurement;
 use serde::{Deserialize, Serialize};
+mod cpu;
+mod time;
 
 pub trait MeasurementMethod {
     fn run(&mut self);
@@ -10,39 +12,7 @@ pub trait MeasurementMethod {
 #[derive(Clone, Debug, Serialize, Deserialize)]
 pub enum MeasurementType {
     TimeMeasurement(TimeMeasurement),
-}
-
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct TimeMeasurement {
-    #[serde(skip_serializing, skip_deserializing)]
-    pub start: Option<std::time::Instant>,
-
-    pub stop: Option<Duration>,
-}
-
-impl TimeMeasurement {
-    pub fn new() -> Self {
-        Self {
-            start: None,
-            stop: None,
-        }
-    }
-}
-
-impl Default for TimeMeasurement {
-    fn default() -> Self {
-        Self::new()
-    }
-}
-
-impl MeasurementMethod for TimeMeasurement {
-    fn run(&mut self) {
-        self.start = Some(std::time::Instant::now());
-    }
-
-    fn stop(&mut self) {
-        self.stop = Some(self.start.expect("Measurement to have started").elapsed());
-    }
+    CpuMeasurement(CpuMeasurement),
 }
 
 #[derive(Debug, Clone)]
@@ -67,22 +37,30 @@ impl Measurement {
         self.measurements.push(measurement);
     }
 
+    /// run all measurements
     pub fn run(&mut self) {
         for measurement in self.measurements.iter_mut() {
             match measurement {
                 MeasurementType::TimeMeasurement(ref mut time_measurement) => {
                     time_measurement.run();
                 }
+                MeasurementType::CpuMeasurement(_) => todo!(),
             }
         }
     }
 
+    /// stop all measurements
+    /// this will panic if the measurement has not been started
     pub fn stop(&mut self) {
         for measurement in self.measurements.iter_mut() {
             match measurement {
                 MeasurementType::TimeMeasurement(time_measurement) => {
+                    if time_measurement.start.is_none() {
+                        panic!("Measurement has not been started");
+                    }
                     time_measurement.stop();
                 }
+                MeasurementType::CpuMeasurement(_) => todo!(),
             }
         }
     }

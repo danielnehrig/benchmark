@@ -3,6 +3,13 @@ pub mod results;
 pub mod engine;
 pub mod measurements;
 
+#[cfg_attr(target_os = "linux", path = "linux.rs")]
+#[cfg_attr(windows, path = "windows.rs")]
+pub mod sys;
+
+#[cfg(windows)]
+pub mod windows;
+
 pub mod prelude {
     pub use crate::engine::{Benchmark, BenchmarkBuilder};
     pub use crate::results::BenchmarkResults;
@@ -11,7 +18,7 @@ pub mod prelude {
 // Test sync
 #[cfg(not(feature = "async"))]
 #[cfg(test)]
-mod sync_tests {
+mod bench_sync {
     use super::*;
     use engine::{Benchmark, BenchmarkBuilder};
 
@@ -42,7 +49,7 @@ mod sync_tests {
 // Test async
 #[cfg(feature = "async")]
 #[cfg(test)]
-mod async_tests {
+mod bench_async {
     use super::*;
     use engine::{Benchmark, BenchmarkBuilder};
 

@@ -1,5 +1,3 @@
-use std::time::Duration;
-
 use crate::measurements::Measurement;
 use crate::results::BenchmarkResults;
 #[cfg(feature = "async")]
