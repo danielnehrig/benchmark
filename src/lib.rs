@@ -16,7 +16,7 @@ pub mod prelude {
 // Test sync
 #[cfg(not(feature = "async"))]
 #[cfg(test)]
-mod bench_sync {
+mod tests {
     use super::*;
     use engine::{Benchmark, BenchmarkBuilder};
 
@@ -47,7 +47,7 @@ mod bench_sync {
 // Test async
 #[cfg(feature = "async")]
 #[cfg(test)]
-mod bench_async {
+mod tests {
     use super::*;
     use engine::{Benchmark, BenchmarkBuilder};
 
