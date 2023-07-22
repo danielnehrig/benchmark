@@ -15,7 +15,7 @@ serde = { version = "1.0.171", features = ["derive"] }
 serde_json = "1.0.103"
 chrono = { version = "0.4.26", features = ["serde"] }
 fake = { version = "2.6.1", features = ["chrono"] }
-tokio = { version = "1.29.1", features = ["macros"] }
+tokio = { version = "1.29.1", features = ["macros", "time", "rt"] }
 
 # windows target
 [target.'cfg(windows)'.dependencies]
