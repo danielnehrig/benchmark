@@ -6,11 +6,17 @@ mod linux;
 #[cfg_attr(windows, path = "windows.rs")]
 mod windows;
 
+#[cfg_attr(target_os = "macos", path = "darwin.rs")]
+mod darwin;
+
 #[cfg(target_os = "linux")]
 pub use linux::*;
 
 #[cfg(windows)]
 pub use windows::*;
+
+#[cfg(target_os = "macos")]
+pub use darwin::*;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Memory {
